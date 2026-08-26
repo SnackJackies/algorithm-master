@@ -1,0 +1,22 @@
+{
+  "name": "algorithm-master",
+  "version": "1.0.0",
+  "description": "Algorithm Master - An interactive Doodle-themed algorithm sequencing puzzle game",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  },
+  "keywords": [
+    "algorithm",
+    "game",
+    "education",
+    "puzzle",
+    "doodle"
+  ],
+  "author": "Nattawat Chunyoo",
+  "license": "ISC"
+}

@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="th" class="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Algorithm Master - เกมจัดเรียงลำดับอัลกอริทึมสุดท้าทาย</title>
+  <meta name="description" content="เกมทดสอบไหวพริบและการคิดเชิงตรรกะ จัดเรียงบล็อคเหตุการณ์ให้ถูกต้องตามลำดับอัลกอริทึม พร้อมสะสมคะแนนขึ้นสู่ Leaderboard">
+  
+  <!-- Tailwind CSS CDN with configuration -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            doodle: {
+              pink: '#FF5E8E',
+              'pink-hover': '#FF2A85',
+              'pink-light': '#FFE5EC',
+              black: '#18181B',
+              white: '#FAF8F5',
+              dark: '#12151C',
+              darkCard: '#1B202C'
+            }
+          },
+          fontFamily: {
+            prompt: ['Prompt', 'sans-serif'],
+            mali: ['Mali', 'cursive', 'sans-serif'],
+            gaegu: ['Gaegu', 'cursive', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="doodle-bg-pattern min-h-screen flex flex-col justify-between selection:bg-pink-300 selection:text-zinc-900 transition-colors duration-300">
+
+  <!-- ================= TOP NAVIGATION BAR ================= -->
+  <header class="sticky top-0 z-40 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md border-b-2 border-zinc-800 dark:border-zinc-700 shadow-sm transition-colors">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
+      
+      <!-- Brand Logo -->
+      <div class="flex items-center gap-2.5 cursor-pointer select-none" data-nav-target="home">
+        <span class="text-2xl sm:text-3xl animate-bounce-slow">✏️</span>
+        <div class="leading-tight">
+          <h1 class="text-xl sm:text-2xl font-extrabold font-mali tracking-tight text-zinc-900 dark:text-white flex items-center gap-1.5">
+            Algorithm <span class="text-pink-500 underline decoration-wavy decoration-2">Master</span>
+          </h1>
+          <p class="text-[10px] sm:text-xs text-zinc-500 dark:text-zinc-400 font-prompt hidden sm:block">เกมเรียงลำดับตรรกะ & อัลกอริทึม</p>
+        </div>
+      </div>
+
+      <!-- Desktop Nav Tabs -->
+      <nav class="hidden md:flex items-center gap-2 font-prompt text-sm font-semibold">
+        <button data-nav-target="home" class="px-4 py-2 rounded-xl hover:bg-pink-50 dark:hover:bg-zinc-800 transition-all flex items-center gap-1.5 active-nav-link text-pink-600 dark:text-pink-400">
+          <span>🏠</span> หน้าแรก (Home)
+        </button>
+        <button data-nav-target="play" class="px-4 py-2 rounded-xl hover:bg-pink-50 dark:hover:bg-zinc-800 transition-all flex items-center gap-1.5 text-zinc-700 dark:text-zinc-300">
+          <span>🎮</span> เล่นเกม (Play Game)
+        </button>
+        <button data-nav-target="settings" class="px-4 py-2 rounded-xl hover:bg-pink-50 dark:hover:bg-zinc-800 transition-all flex items-center gap-1.5 text-zinc-700 dark:text-zinc-300">
+          <span>⚙️</span> ตั้งค่า (Settings)
+        </button>
+      </nav>
+
+      <!-- Quick Theme Toggle & Mobile Hamburger -->
+      <div class="flex items-center gap-2">
+        <button id="quick-theme-toggle" class="w-10 h-10 rounded-xl border-2 border-zinc-800 dark:border-zinc-600 bg-white dark:bg-zinc-800 shadow-[2px_2px_0px_#18181b] dark:shadow-[2px_2px_0px_#ff5e8e] flex items-center justify-center text-lg hover:scale-105 active:scale-95 transition-all" title="สลับโหมดมืด/สว่าง">
+          🌙
+        </button>
+        
+        <!-- Mobile Menu Toggle Button -->
+        <button id="mobile-menu-btn" class="md:hidden w-10 h-10 rounded-xl border-2 border-zinc-800 dark:border-zinc-600 bg-white dark:bg-zinc-800 shadow-[2px_2px_0px_#18181b] flex items-center justify-center text-lg text-zinc-800 dark:text-zinc-200" aria-label="Toggle navigation menu">
+          ☰
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Mobile Dropdown Menu -->
+    <div id="mobile-menu-dropdown" class="hidden md:hidden border-t-2 border-zinc-800 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-4 py-3 space-y-2 font-prompt">
+      <button data-nav-target="home" class="w-full text-left px-3 py-2 rounded-lg hover:bg-pink-50 dark:hover:bg-zinc-800 flex items-center gap-2 font-medium text-zinc-800 dark:text-zinc-200">
+        <span>🏠</span> หน้าแรก (Home)
+      </button>
+      <button data-nav-target="play" class="w-full text-left px-3 py-2 rounded-lg hover:bg-pink-50 dark:hover:bg-zinc-800 flex items-center gap-2 font-medium text-zinc-800 dark:text-zinc-200">
+        <span>🎮</span> เล่นเกม (Play Game)
+      </button>
+      <button data-nav-target="settings" class="w-full text-left px-3 py-2 rounded-lg hover:bg-pink-50 dark:hover:bg-zinc-800 flex items-center gap-2 font-medium text-zinc-800 dark:text-zinc-200">
+        <span>⚙️</span> ตั้งค่า (Settings)
+      </button>
+    </div>
+  </header>
+
+  <!-- ================= MAIN CONTENT AREA ================= -->
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 py-6 md:py-8 flex-1 w-full">
+
+    <!-- ================= PAGE 1: HOME (LANDING PAGE) ================= -->
+    <section id="page-home" class="page-view space-y-10 sm:space-y-14 animate-fade-in">
+      
+      <!-- Hero Section -->
+      <div class="text-center max-w-3xl mx-auto space-y-6 pt-4 sm:pt-8">
+        
+        <!-- Doodle Badge -->
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border-2 border-zinc-800 dark:border-zinc-600 bg-pink-100 dark:bg-pink-950/70 text-pink-700 dark:text-pink-300 font-prompt text-xs sm:text-sm font-bold shadow-[2px_2px_0px_#18181b]">
+          <span>✨</span> สนุก คิดไว ได้ฝึกสมองกับตรรกะแบบเกม
+        </div>
+
+        <!-- Main Title with Doodle Aesthetic -->
+        <div class="relative inline-block">
+          <h2 class="text-4xl sm:text-6xl md:text-7xl font-extrabold font-mali tracking-tight text-zinc-900 dark:text-white leading-none">
+            Algorithm <span class="text-pink-500 drop-shadow-sm">Master</span>
+          </h2>
+          <!-- Playful Doodle SVG Underline -->
+          <svg class="w-full h-4 mt-1 text-pink-500" viewBox="0 0 200 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M2 9C50 3 150 3 198 9" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+          </svg>
+        </div>
+
+        <!-- Short Rules & Description in readable 'Prompt' font -->
+        <p class="text-base sm:text-lg md:text-xl text-zinc-700 dark:text-zinc-300 font-prompt leading-relaxed max-w-2xl mx-auto">
+          เกมทดสอบไหวพริบและกระบวนการคิด! ระบบจะสุ่มเหตุการณ์และบล็อคขั้นตอนมาให้คุณ 
+          เพียง<strong class="text-pink-600 dark:text-pink-400">เรียงลำดับขั้นตอนอัลกอริทึมให้ถูกต้อง</strong> 
+          สะสมคะแนนภายในเวลาที่กำหนด และท้าชิงอันดับสูงสุดบน <strong class="text-zinc-900 dark:text-zinc-100">Leaderboard</strong>!
+        </p>
+
+        <!-- CTA Play Button -->
+        <div class="pt-2">
+          <button data-nav-target="play" class="doodle-btn text-lg sm:text-xl font-bold font-prompt bg-pink-500 hover:bg-pink-600 text-white px-8 sm:px-12 py-4 rounded-2xl shadow-[5px_5px_0px_#18181b] dark:shadow-[5px_5px_0px_#ff5e8e] inline-flex items-center gap-3 transition-transform hover:scale-105 active:scale-95 cursor-pointer">
+            <span>🚀</span> เริ่มเล่นเกมเลย (Play Now)
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Quick Rules Pill Banner -->
+      <div class="doodle-box bg-white dark:bg-zinc-800/90 p-5 sm:p-6 max-w-4xl mx-auto border-2 border-zinc-800 dark:border-zinc-700 shadow-[4px_4px_0px_#18181b] dark:shadow-[4px_4px_0px_#ff5e8e]">
+        <h3 class="text-base sm:text-lg font-bold font-mali text-zinc-900 dark:text-white mb-3 flex items-center gap-2">
+          <span class="text-pink-500">📜</span> กติกาการเล่นแบบสรุปสั้นๆ:
+        </h3>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 font-prompt text-xs sm:text-sm text-zinc-600 dark:text-zinc-300">
+          <div class="flex items-start gap-2 bg-pink-50/60 dark:bg-zinc-900/50 p-2.5 rounded-xl border border-pink-200 dark:border-zinc-700">
+            <span class="text-base">1️⃣</span>
+            <span><strong>เลือกเวลา:</strong> เลือกความท้าทาย 60s, 90s หรือ 120s</span>
+          </div>
+          <div class="flex items-start gap-2 bg-pink-50/60 dark:bg-zinc-900/50 p-2.5 rounded-xl border border-pink-200 dark:border-zinc-700">
+            <span class="text-base">2️⃣</span>
+            <span><strong>ลากหรือแตะ:</strong> นำบล็อคขั้นตอนไปวางเรียงในช่อง 1 ถึง N</span>
+          </div>
+          <div class="flex items-start gap-2 bg-pink-50/60 dark:bg-zinc-900/50 p-2.5 rounded-xl border border-pink-200 dark:border-zinc-700">
+            <span class="text-base">3️⃣</span>
+            <span><strong>ตรวจคำตอบ:</strong> หากผิดระบบจะบอกจุดที่ผิด แก้ไขจนกว่าจะถูก</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3 Section Feature Cards (ข้อดี / ประโยชน์ของเกม) -->
+      <div class="pt-4">
+        <div class="text-center mb-8">
+          <h3 class="text-2xl sm:text-3xl font-extrabold font-mali text-zinc-900 dark:text-white flex items-center justify-center gap-2">
+            <span>💡</span> ประโยชน์ที่คุณจะได้รับจากการเล่นเกมนี้
+          </h3>
+          <p class="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 font-prompt mt-1">พัฒนาทักษะสมอง 3 ด้านผ่านการเรียนรู้อย่างสนุกสนาน</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          
+          <!-- Section 1: Logical Thinking -->
+          <div class="doodle-box bg-white dark:bg-zinc-800 p-6 sm:p-7 border-2 border-zinc-800 dark:border-zinc-700 shadow-[4px_4px_0px_#18181b] dark:shadow-[4px_4px_0px_#ff5e8e] flex flex-col items-center text-center space-y-3 hover:-translate-y-1 transition-transform">
+            <div class="w-16 h-16 rounded-2xl bg-pink-100 dark:bg-pink-950/80 border-2 border-zinc-800 dark:border-pink-500 flex items-center justify-center text-3xl shadow-[3px_3px_0px_#18181b]">
+              🧠
+            </div>
+            <h4 class="text-lg sm:text-xl font-bold font-mali text-zinc-900 dark:text-white">
+              การคิดเชิงตรรกะ (Logical Thinking)
+            </h4>
+            <p class="text-xs sm:text-sm text-zinc-600 dark:text-zinc-300 font-prompt leading-relaxed">
+              ฝึกฝนทักษะการคิดอย่างมีเหตุผล เชื่อมโยงความสัมพันธ์ของเหตุและผลในแต่ละขั้นตอน เพื่อค้นหาลำดับการทำงานที่ถูกต้องและสมเหตุสมผลที่สุด
+            </p>
+          </div>
+
+          <!-- Section 2: Problem Solving -->
+          <div class="doodle-box bg-white dark:bg-zinc-800 p-6 sm:p-7 border-2 border-zinc-800 dark:border-zinc-700 shadow-[4px_4px_0px_#18181b] dark:shadow-[4px_4px_0px_#ff5e8e] flex flex-col items-center text-center space-y-3 hover:-translate-y-1 transition-transform">
+            <div class="w-16 h-16 rounded-2xl bg-amber-100 dark:bg-amber-950/80 border-2 border-zinc-800 dark:border-amber-500 flex items-center justify-center text-3xl shadow-[3px_3px_0px_#18181b]">
+              ⚡
+            </div>
+            <h4 class="text-lg sm:text-xl font-bold font-mali text-zinc-900 dark:text-white">
+              การแก้ปัญหาอย่างเป็นระบบ (Problem Solving)
+            </h4>
+            <p class="text-xs sm:text-sm text-zinc-600 dark:text-zinc-300 font-prompt leading-relaxed">
+              พัฒนาทักษะการย่อยปัญหาใหญ่ให้เป็นขั้นตอนย่อยๆ (Decomposition) เรียนรู้การลองผิดลองถูกและแก้ไขจุดบกพร่องได้อย่างรวดเร็วภายใต้เวลาที่จำกัด
+            </p>
+          </div>
+
+          <!-- Section 3: Computational Mindset -->
+          <div class="doodle-box bg-white dark:bg-zinc-800 p-6 sm:p-7 border-2 border-zinc-800 dark:border-zinc-700 shadow-[4px_4px_0px_#18181b] dark:shadow-[4px_4px_0px_#ff5e8e] flex flex-col items-center text-center space-y-3 hover:-translate-y-1 transition-transform">
+            <div class="w-16 h-16 rounded-2xl bg-indigo-100 dark:bg-indigo-950/80 border-2 border-zinc-800 dark:border-indigo-500 flex items-center justify-center text-3xl shadow-[3px_3px_0px_#18181b]">
+              🚀
+            </div>
+            <h4 class="text-lg sm:text-xl font-bold font-mali text-zinc-900 dark:text-white">
+              พื้นฐานวิทยาการคำนวณ (Computational Mindset)
+            </h4>
+            <p class="text-xs sm:text-sm text-zinc-600 dark:text-zinc-300 font-prompt leading-relaxed">
+              เข้าใจโครงสร้างอัลกอริทึมที่อยู่เบื้องหลังเทคโนโลยีและชีวิตประจำวัน เช่น การค้นหา (Search), การจัดเรียง (Sorting) และตรรกะระบบอัตโนมัติ
+            </p>
+          </div>
+
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ================= PAGE 2: PLAY GAME ================= -->
+    <section id="page-play" class="page-view hidden space-y-6 animate-fade-in">
+      
+      <!-- 2.1 LOBBY VIEW (Before Starting Game) -->
+      <div id="play-lobby-view" class="space-y-8 max-w-3xl mx-auto">
+        
+        <!-- Header & Mode Selection -->
+        <div class="text-center space-y-2">
+          <h2 class="text-3xl sm:text-4xl font-extrabold font-mali text-zinc-900 dark:text-white flex items-center justify-center gap-2">
+            <span>⏱️</span> เลือกหมวดเวลาเพื่อเริ่มเล่น
+          </h2>
+          <p class="text-sm text-zinc-600 dark:text-zinc-400 font-prompt">
+            เลือกเวลาที่ต้องการท้าทาย ยิ่งเวลามากยิ่งมีโอกาสเก็บคะแนนได้หลายโจทย์!
+          </p>
+        </div>
+
+        <!-- Time Mode Cards (60s, 90s, 120s) -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 font-prompt">
+          
+          <!-- Mode 60s (Default Active) -->
+          <div data-time="60" class="time-select-card doodle-box bg-pink-50 dark:bg-pink-950/40 border-pink-500 scale-105 p-5 rounded-2xl cursor-pointer text-center space-y-2 transition-all">
+            <span class="time-badge inline-block px-3 py-1 bg-pink-500 text-white rounded-full text-xs font-bold">ยอดนิยม</span>
+            <div class="text-3xl font-extrabold font-mali text-zinc-900 dark:text-white">60 วินาที</div>
+            <p class="text-xs text-zinc-600 dark:text-zinc-400">ความเร็วสูง ตอบไว สปีดรัน</p>
+          </div>
+
+          <!-- Mode 90s -->
+          <div data-time="90" class="time-select-card doodle-box bg-white dark:bg-zinc-800 border-zinc-800 dark:border-zinc-700 p-5 rounded-2xl cursor-pointer text-center space-y-2 transition-all hover:scale-102">
+            <span class="time-badge inline-block px-3 py-1 bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300 rounded-full text-xs font-bold">ปานกลาง</span>
+            <div class="text-3xl font-extrabold font-mali text-zinc-900 dark:text-white">90 วินาที</div>
+            <p class="text-xs text-zinc-600 dark:text-zinc-400">สมดุลเวลาและการคิดวิเคราะห์</p>
+          </div>
+
+          <!-- Mode 120s -->
+          <div data-time="120" class="time-select-card doodle-box bg-white dark:bg-zinc-800 border-zinc-800 dark:border-zinc-700 p-5 rounded-2xl cursor-pointer text-center space-y-2 transition-all hover:scale-102">
+            <span class="time-badge inline-block px-3 py-1 bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300 rounded-full text-xs font-bold">มาราธอน</span>
+            <div class="text-3xl font-extrabold font-mali text-zinc-900 dark:text-white">120 วินาที</div>
+            <p class="text-xs text-zinc-600 dark:text-zinc-400">สะสมคะแนนแบบเต็มอิ่ม</p>
+          </div>
+
+        </div>
+
+        <!-- Continue Button -->
+        <div class="text-center pt-2">
+          <button id="btn-start-game-lobby" class="doodle-btn w-full sm:w-auto text-lg font-bold font-prompt bg-pink-500 hover:bg-pink-600 text-white px-10 py-4 rounded-2xl shadow-[4px_4px_0px_#18181b] dark:shadow-[4px_4px_0px_#ff5e8e] inline-flex items-center justify-center gap-2 transition-transform hover:scale-105 cursor-pointer">
+            <span>▶️</span> Continue (เริ่มเล่นเกม)
+          </button>
+        </div>
+
+        <!-- Leaderboard Section -->
+        <div class="doodle-box bg-white dark:bg-zinc-800 p-5 sm:p-6 rounded-2xl border-2 border-zinc-800 dark:border-zinc-700 shadow-[4px_4px_0px_#18181b] dark:shadow-[4px_4px_0px_#ff5e8e] space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b-2 border-zinc-200 dark:border-zinc-700 pb-3">
+            <div>
+              <h3 class="text-xl font-bold font-mali text-zinc-900 dark:text-white flex items-center gap-2">
+                <span>🏆</span> Leaderboard ทำเนียบผู้พิชิตคะแนนสูงสุด
+              </h3>
+              <p class="text-xs text-zinc-500 dark:text-zinc-400 font-prompt">สถิติคะแนนและเวลาเล่นจบ (GMT+7) บันทึกบนเครื่องของคุณ</p>
+            </div>
+
+            <!-- Time Filter Tabs for Leaderboard -->
+            <div class="flex items-center gap-1.5 bg-zinc-100 dark:bg-zinc-900 p-1 rounded-xl border border-zinc-300 dark:border-zinc-700 font-prompt text-xs font-bold">
+              <button onclick="window.algorithmGame.selectTimeMode(60)" class="px-3 py-1.5 rounded-lg bg-pink-500 text-white shadow-sm">60s</button>
+              <button onclick="window.algorithmGame.selectTimeMode(90)" class="px-3 py-1.5 rounded-lg text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-800">90s</button>
+              <button onclick="window.algorithmGame.selectTimeMode(120)" class="px-3 py-1.5 rounded-lg text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-800">120s</button>
+            </div>
+          </div>
+
+          <!-- Leaderboard List Container -->
+          <div id="leaderboard-list">
+            <!-- Rendered by leaderboard.js -->
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 2.2 IN-GAME ARENA VIEW (4 Main Parts) -->
+      <div id="play-arena-view" class="hidden space-y-6 max-w-4xl mx-auto">
+
+        <!-- Top In-Game Status Bar (Score, Timer, Re-situations) -->
+        <div class="doodle-box bg-white dark:bg-zinc-800 p-3.5 sm:p-4 rounded-2xl border-2 border-zinc-800 dark:border-zinc-700 shadow-[3px_3px_0px_#18181b] dark:shadow-[3px_3px_0px_#ff5e8e] flex flex-wrap items-center justify-between gap-3 font-prompt">
+          
+          <!-- Current Score -->
+          <div class="flex items-center gap-2">
+            <span class="text-2xl">⭐</span>
+            <div>
+              <span class="text-xs text-zinc-500 dark:text-zinc-400 block font-medium">คะแนนปัจจุบัน</span>
+              <span id="game-score" class="text-xl sm:text-2xl font-extrabold text-pink-600 dark:text-pink-400 font-mali">0</span>
+            </div>
+          </div>
+
+          <!-- Re-Situation Counter -->
+          <div class="flex items-center gap-2 bg-pink-50 dark:bg-zinc-900/80 px-3 py-1.5 rounded-xl border border-pink-200 dark:border-zinc-700">
+            <span class="text-base">🔄</span>
+            <div>
+              <span class="text-[11px] text-zinc-500 dark:text-zinc-400 block">สุ่มโจทย์ใหม่คงเหลือ</span>
+              <span id="re-situation-count" class="text-sm font-bold text-zinc-900 dark:text-white font-mali">2/2</span>
+            </div>
+          </div>
+
+          <!-- Timer & Progress Bar -->
+          <div class="flex-1 min-w-[160px] sm:max-w-xs text-right">
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-xs text-zinc-500 dark:text-zinc-400 font-medium">เวลาที่เหลือ:</span>
+              <span id="game-timer" class="text-lg sm:text-xl font-extrabold font-mali text-zinc-900 dark:text-white">60s</span>
+            </div>
+            <div class="w-full h-3 bg-zinc-200 dark:bg-zinc-700 rounded-full overflow-hidden border border-zinc-800 dark:border-zinc-600 p-0.5">
+              <div id="game-timer-bar" class="h-full bg-pink-500 rounded-full transition-all duration-300 w-full"></div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ================= PART 1: โจทย์ (SCENARIO) ================= -->
+        <div class="doodle-box bg-white dark:bg-zinc-800 p-4 sm:p-6 rounded-2xl border-2 border-zinc-800 dark:border-zinc-700 shadow-[4px_4px_0px_#18181b] dark:shadow-[4px_4px_0px_#ff5e8e] space-y-3">
+          
+          <!-- Badges Row -->
+          <div class="flex flex-wrap items-center gap-2">
+            <span id="question-category" class="px-2.5 py-1 text-xs font-bold rounded-full bg-pink-100 text-pink-700 dark:bg-pink-950 dark:text-pink-300 border border-pink-300 dark:border-pink-700 font-prompt">
+              ชีวิตประจำวัน
+            </span>
+            <span id="question-difficulty" class="px-2.5 py-1 text-xs font-bold rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-500 font-prompt">
+              ง่าย (Easy)
+            </span>
+            <span id="question-points" class="px-2.5 py-1 text-xs font-extrabold rounded-full bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900 font-prompt">
+              +15 แต้ม
+            </span>
+          </div>
+
+          <!-- Scenario Title ending with (X คะแนน) in Prompt font -->
+          <h3 id="question-title" class="text-xl sm:text-2xl font-bold font-prompt text-zinc-900 dark:text-white leading-snug">
+            ขั้นตอนการต้มบะหมี่กึ่งสำเร็จรูปแสนอร่อย 🍜 <span class="text-pink-500 font-extrabold">(15 คะแนน)</span>
+          </h3>
+
+          <!-- Scenario Description -->
+          <p id="question-desc" class="text-sm sm:text-base text-zinc-600 dark:text-zinc-300 font-prompt leading-relaxed">
+            จัดเรียงขั้นตอนการทำอาหารยอดฮิตในชีวิตประจำวันให้ถูกต้องตามหลักอัลกอริทึมทีละขั้นตอน เพื่อให้ได้บะหมี่ที่เส้นเหนียวนุ่มและรสชาติกลมกล่อม
+          </p>
+
+        </div>
+
+        <!-- Success Toast / Banner -->
+        <div id="success-banner-container" class="hidden"></div>
+
+        <!-- ================= PART 2: ช่องสำหรับเรียงใส่ ALGORITHM BLOCK ================= -->
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <h4 class="text-sm sm:text-base font-bold font-mali text-zinc-900 dark:text-white flex items-center gap-1.5">
+              <span>🎯</span> ช่องสำหรับเรียงลำดับขั้นตอน (Drop Slots)
+            </h4>
+            <span class="text-xs text-zinc-500 dark:text-zinc-400 font-prompt">เรียงจากขั้นตอนที่ 1 ลงไป</span>
+          </div>
+
+          <!-- Slots Container (Dynamically rendered) -->
+          <div id="algorithm-slots-container" class="grid grid-cols-1 gap-2.5">
+            <!-- Dynamically populated slots -->
+          </div>
+        </div>
+
+        <!-- ================= PART 3: BLOCKS ทั้งหมด (BLOCK POOL) ================= -->
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <h4 class="text-sm sm:text-base font-bold font-mali text-zinc-900 dark:text-white flex items-center gap-1.5">
+              <span>📦</span> Blocks ทั้งหมดที่ต้องจัดเรียง (ลากหรือแตะเพื่อใส่)
+            </h4>
+            <span class="text-xs text-pink-500 font-bold font-prompt">สุ่มลำดับ</span>
+          </div>
+
+          <!-- Draggable Block Pool Container -->
+          <div id="blocks-pool-container" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 min-h-[100px] p-3 rounded-2xl bg-zinc-100/70 dark:bg-zinc-900/60 border-2 border-dashed border-zinc-300 dark:border-zinc-700">
+            <!-- Dynamically populated draggable blocks -->
+          </div>
+        </div>
+
+        <!-- Error Feedback Message Container -->
+        <div id="error-feedback-container" class="hidden"></div>
+
+        <!-- ================= PART 4: ACTION (3 BUTTONS IN ONE ROW) ================= -->
+        <div class="pt-2">
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            
+            <!-- Button 1: Submit (Disabled/Gray until all filled, turns Pink, Debounce 5s) -->
+            <button id="btn-submit-answer" disabled class="doodle-btn relative w-full py-3.5 px-3 rounded-2xl font-bold font-prompt text-sm sm:text-base text-zinc-400 bg-zinc-200 dark:bg-zinc-800 border-2 border-zinc-400 dark:border-zinc-700 cursor-not-allowed transition-all overflow-hidden flex items-center justify-center gap-2">
+              <div id="submit-progress-overlay" class="submit-cooldown-bar"></div>
+              <span class="relative z-10 flex items-center justify-center gap-1.5">
+                <span>✅</span> <span id="submit-btn-text">ใส่บล็อคให้ครบก่อนส่ง</span>
+              </span>
+            </button>
+
+            <!-- Button 2: Re-Situation (Randomize new question, max 2 uses) -->
+            <button id="btn-re-situation" class="doodle-btn w-full py-3.5 px-3 rounded-2xl font-bold font-prompt text-sm sm:text-base bg-amber-400 hover:bg-amber-500 text-zinc-900 border-2 border-zinc-800 shadow-[3px_3px_0px_#18181b] dark:shadow-[3px_3px_0px_#f59e0b] transition-all flex items-center justify-center gap-2 cursor-pointer">
+              <span>🎲</span> <span>Re-Situation (สุ่มใหม่)</span>
+            </button>
+
+            <!-- Button 3: Exit Game (1st click: Confirm Exit?, 2nd click: exit to Landing Page) -->
+            <button id="btn-exit-game" class="doodle-btn w-full py-3.5 px-3 rounded-2xl font-bold font-prompt text-sm sm:text-base bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-800 dark:text-zinc-200 border-2 border-zinc-800 dark:border-zinc-600 shadow-[3px_3px_0px_#18181b] transition-all flex items-center justify-center gap-2 cursor-pointer">
+              <span>🚪</span> <span>ออกเกม</span>
+            </button>
+
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ================= PAGE 3: SETTINGS ================= -->
+    <section id="page-settings" class="page-view hidden space-y-8 max-w-2xl mx-auto animate-fade-in">
+      
+      <!-- Settings Header -->
+      <div class="text-center space-y-2">
+        <h2 class="text-3xl sm:text-4xl font-extrabold font-mali text-zinc-900 dark:text-white flex items-center justify-center gap-2">
+          <span>⚙️</span> การตั้งค่า & ข้อมูลผู้พัฒนา
+        </h2>
+        <p class="text-sm text-zinc-600 dark:text-zinc-400 font-prompt">ปรับแต่งการแสดงผลและข้อมูลระบบ</p>
+      </div>
+
+      <!-- Settings Controls Box -->
+      <div class="doodle-box bg-white dark:bg-zinc-800 p-6 sm:p-8 rounded-2xl border-2 border-zinc-800 dark:border-zinc-700 shadow-[5px_5px_0px_#18181b] dark:shadow-[5px_5px_0px_#ff5e8e] space-y-6 font-prompt">
+        
+        <!-- Setting 1: Night Mode Toggle Switch -->
+        <div class="flex items-center justify-between py-2 border-b border-zinc-200 dark:border-zinc-700">
+          <div class="space-y-1">
+            <span class="text-base sm:text-lg font-bold text-zinc-900 dark:text-white flex items-center gap-2">
+              <span>🌙</span> โหมดกลางคืน (Night Mode)
+            </span>
+            <p class="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400">
+              สลับระหว่างพื้นหลังสไตล์ขาวคลีน และสีกรม-เทา-เกือบดำสบายตา
+            </p>
+          </div>
+          
+          <!-- Toggle Switch -->
+          <label class="doodle-switch shrink-0 ml-4">
+            <input type="checkbox" id="night-mode-toggle">
+            <span class="doodle-slider"></span>
+          </label>
+        </div>
+
+        <!-- Setting 2: Sound FX Toggle -->
+        <div class="flex items-center justify-between py-2">
+          <div class="space-y-1">
+            <span class="text-base sm:text-lg font-bold text-zinc-900 dark:text-white flex items-center gap-2">
+              <span>🔊</span> เสียงเอฟเฟกต์ (Sound FX)
+            </span>
+            <p class="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400">
+              เปิด/ปิดเสียงกดปุ่ม เสียงตอบถูก และเสียงนับถอยหลัง
+            </p>
+          </div>
+          
+          <label class="doodle-switch shrink-0 ml-4">
+            <input type="checkbox" id="sound-toggle" checked>
+            <span class="doodle-slider"></span>
+          </label>
+        </div>
+
+      </div>
+
+      <!-- Credits Section as specified -->
+      <div class="doodle-box bg-pink-50/70 dark:bg-zinc-800/80 p-6 sm:p-7 rounded-2xl border-2 border-zinc-800 dark:border-zinc-700 shadow-[4px_4px_0px_#18181b] dark:shadow-[4px_4px_0px_#ff5e8e] text-center space-y-4 font-prompt">
+        
+        <div class="text-3xl">👨‍💻</div>
+        
+        <div class="space-y-1">
+          <h4 class="text-base sm:text-lg font-bold text-zinc-900 dark:text-white">
+            Developed by Nattawat Chunyoo, All right reserved
+          </h4>
+          <p class="text-xs text-zinc-500 dark:text-zinc-400">
+            สร้างสรรค์เพื่อการเรียนรู้วิทยาการคำนวณและตรรกะอัลกอริทึม
+          </p>
+        </div>
+
+        <!-- Instagram Social Media Link -->
+        <div class="pt-2">
+          <a href="https://instagram.com/snackjxckies" target="_blank" rel="noopener noreferrer" class="doodle-btn inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-purple-500 via-pink-500 to-amber-500 text-white font-bold text-sm shadow-[3px_3px_0px_#18181b] hover:scale-105 active:scale-95 transition-transform">
+            <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+              <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+            </svg>
+            <span>Instagram: @snackjxckies</span>
+          </a>
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ================= GAME OVER / RECORD SCORE MODAL ================= -->
+  <div id="game-over-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 hidden animate-fade-in">
+    <div class="doodle-box bg-white dark:bg-zinc-800 max-w-md w-full p-6 sm:p-8 rounded-3xl border-3 border-zinc-800 dark:border-pink-500 shadow-[6px_6px_0px_#18181b] dark:shadow-[6px_6px_0px_#ff5e8e] space-y-5 text-center font-prompt">
+      
+      <div class="text-4xl sm:text-5xl animate-bounce">🏆</div>
+      
+      <div class="space-y-1">
+        <h3 class="text-2xl sm:text-3xl font-extrabold font-mali text-zinc-900 dark:text-white">
+          หมดเวลาแล้ว! (Game Over)
+        </h3>
+        <p class="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400">ผลงานการจัดเรียงอัลกอริทึมของคุณในรอบนี้</p>
+      </div>
+
+      <!-- Stats Summary Grid -->
+      <div class="grid grid-cols-2 gap-3 py-1">
+        <div class="bg-pink-50 dark:bg-zinc-900 p-3 rounded-2xl border border-pink-200 dark:border-zinc-700">
+          <span class="text-xs text-zinc-500 dark:text-zinc-400 block">คะแนนรวม</span>
+          <span id="final-score-display" class="text-2xl sm:text-3xl font-black text-pink-600 dark:text-pink-400 font-mali">0</span>
+        </div>
+        <div class="bg-pink-50 dark:bg-zinc-900 p-3 rounded-2xl border border-pink-200 dark:border-zinc-700">
+          <span class="text-xs text-zinc-500 dark:text-zinc-400 block">หมวดเวลา</span>
+          <span id="final-time-display" class="text-base sm:text-lg font-bold text-zinc-900 dark:text-white font-mali">60s</span>
+        </div>
+      </div>
+
+      <div class="text-xs text-zinc-400 dark:text-zinc-500">
+        เวลาที่เล่นจบ (GMT+7): <span id="final-date-display" class="font-bold text-zinc-600 dark:text-zinc-300">-</span>
+      </div>
+
+      <!-- Name Input for Leaderboard -->
+      <div class="space-y-1.5 text-left">
+        <label for="player-name-input" class="text-xs font-bold text-zinc-700 dark:text-zinc-300">
+          ชื่อของคุณเพื่อบันทึกลง Leaderboard:
+        </label>
+        <input type="text" id="player-name-input" maxlength="20" placeholder="พิมพ์ชื่อของคุณที่นี่..." class="w-full px-4 py-2.5 rounded-xl border-2 border-zinc-800 dark:border-zinc-600 bg-zinc-50 dark:bg-zinc-900 text-zinc-900 dark:text-white focus:outline-none focus:border-pink-500 font-prompt text-sm">
+      </div>
+
+      <!-- Modal Action Buttons -->
+      <div class="flex items-center gap-3 pt-2">
+        <button id="btn-save-score" class="doodle-btn flex-1 py-3 px-4 rounded-xl font-bold bg-pink-500 hover:bg-pink-600 text-white shadow-[3px_3px_0px_#18181b] transition-all cursor-pointer">
+          💾 บันทึกคะแนน
+        </button>
+        <button id="btn-play-again" class="doodle-btn flex-1 py-3 px-4 rounded-xl font-bold bg-zinc-200 hover:bg-zinc-300 dark:bg-zinc-700 dark:hover:bg-zinc-600 text-zinc-900 dark:text-zinc-100 shadow-[3px_3px_0px_#18181b] transition-all cursor-pointer">
+          🔄 เล่นอีกครั้ง
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="border-t-2 border-zinc-800 dark:border-zinc-700 bg-white/80 dark:bg-zinc-900/80 py-4 font-prompt text-xs text-center text-zinc-500 dark:text-zinc-400">
+    <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+      <p>© 2026 <strong>Algorithm Master</strong>. All rights reserved.</p>
+      <p>Developed by <strong>Nattawat Chunyoo</strong> | IG: <a href="https://instagram.com/snackjxckies" target="_blank" class="text-pink-500 hover:underline">@snackjxckies</a></p>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/questions.js"></script>
+  <script src="js/leaderboard.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
